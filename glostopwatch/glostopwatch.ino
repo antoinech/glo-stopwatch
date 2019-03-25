@@ -1,5 +1,6 @@
 /*
-    
+    MIT License
+    By Antoine CHEREL
 */
 
 #include <ESP8266WiFi.h>
@@ -27,9 +28,7 @@ const char* fingerprint = "35 85 74 EF 67 35 A7 CE 40 69 50 F3 C0 F6 80 CF 80 3B
 WiFiClientSecure client;
   
 
-void setup() {
-  Serial.begin(115200);
-  Serial.println();
+void ConnectToWiFi(){
   Serial.print("connecting to ");
   Serial.println(ssid);
   WiFi.mode(WIFI_STA);
@@ -42,7 +41,10 @@ void setup() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+}
 
+void ConnectToGloAPI(){
+  
   // Use WiFiClientSecure class to create TLS connection
   Serial.print("connecting to ");
   Serial.println(host);
@@ -57,11 +59,17 @@ void setup() {
     Serial.println("certificate doesn't match");
   }
 
+}
 
-  String url_boards = "/v1/glo/boards";
-
-  String line = GloGet(url_boards);
+void setup() {
+  Serial.begin(115200);
+  Serial.println();
+  ConnectToWiFi();
   
+  ConnectToGloAPI();
+  
+  String url_boards = "/v1/glo/boards";
+  String line = GloGet(url_boards);
   Serial.println(line);
   if(line != NULL){
     const char * board_id;
@@ -88,6 +96,8 @@ void setup() {
   
 }
 
+
+//returns a JSON string from the GET method
 String GloGet(String url){
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
@@ -109,4 +119,5 @@ String GloGet(String url){
 
 
 void loop() {
+  
 }
