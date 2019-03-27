@@ -146,6 +146,10 @@ bool taskPlaying = false;
 bool taskDone = false;
 bool tick = false;
 
+//Time in milliseconds
+unsigned long elapsedTime = 0;
+unsigned long lastTime;
+
 void ConnectToWiFi() {
   Serial.print("connecting to ");
   display.print("connecting to ");
@@ -313,6 +317,7 @@ void DisplayBoards() {
     Serial.println(bd.name);
     Serial.println(bd.id);
   }
+  display.setTextColor(BLACK);
   display.display();
 }
 
@@ -336,6 +341,7 @@ void DisplayCards() {
     display.print("\n");
     Serial.println(cd.name);
   }
+  display.setTextColor(BLACK);
   display.display();
 }
 
@@ -440,6 +446,10 @@ void HandleCardsInput(){
       //You picked your task!
        cardMode = false;
        taskName = cards[cardCurr].name;
+       taskPlaying = true;
+       lastTime = millis();
+       //avoid ending the card when selecting a card
+       delay(100);
     }
 }
 
@@ -491,22 +501,46 @@ void UpdateDisplay(){
 void UpdateTaskDisplay(){
    display.clearDisplay();
    display.setTextColor(BLACK);
+   if(taskDone){
+     display.write(219);
+   }
+   else if(!taskPlaying){
+     display.write(185);
+   }else{
+     display.write(16);
+   }
+   display.print(" ");
    display.print(taskName);
-   display.setCursor(2,20);
    display.setTextSize(2);
-    if(taskDone){
-      display.write(219);
-    }
-    else if(!taskPlaying){
-      display.write(185);
-    }else{
-      display.write(16);
-    }
+   display.setCursor(0,32);
+   PrintTime();
    display.setTextSize(1);
-   display.setCursor(0,40);
-   display.print("01:30");
-   display.setCursor(30,40);
    display.display();
+}
+
+String intToDigit(int val){
+  String out;
+  if(val > 10){
+    out = String(val);
+  }else{
+    out = "0" + String(val);
+  }
+  return out;
+}
+
+void PrintTime(){
+  //Time in seconds
+  unsigned long Now = elapsedTime/1000;
+  int Seconds = Now%60;
+  int Minutes = (Now/60)%60;
+  int Hours = (Now/3600)%24;
+  String s = intToDigit(Seconds);
+  String m = intToDigit(Minutes);
+  display.print(String(Hours));
+  display.print(":");
+  display.print(m);
+  display.print(":");
+  display.print(s);
 }
 
 void UpdateBoardsDisplay(){
@@ -535,9 +569,18 @@ void UpdateCardsDisplay(){
     }
 }
 
+void UpdateTime(){
+  unsigned long now = millis();
+  if(taskPlaying){
+    elapsedTime += now - lastTime;  
+  }
+  lastTime = now;
+}
+
 void loop() {
   CheckButtons();
   HandleInputs();
+  UpdateTime();
   UpdateDisplay();
   tick = !tick;
   delay(100);  // Adjust this to change graph speed
