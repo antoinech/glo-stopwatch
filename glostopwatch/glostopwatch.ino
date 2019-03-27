@@ -37,7 +37,7 @@
 struct board
 {
   String name;
-  String id ;
+  String id;
   bool selected;
 };
 typedef struct board Board;
@@ -140,6 +140,12 @@ int cardCurr = 0;
 int cardPrev = 0;
 bool cardMode = false;
 
+//Stopwatch
+String taskName;
+bool taskPlaying = false;
+bool taskDone = false;
+bool tick = false;
+
 void ConnectToWiFi() {
   Serial.print("connecting to ");
   display.print("connecting to ");
@@ -193,7 +199,7 @@ void InitLCD() {
 
   // Configure LCD
   display.begin();
-  display.setContrast(60);
+  display.setContrast(50);
   display.setTextSize(1);
   display.setTextColor(BLACK);
   display.setCursor(0, 0);
@@ -208,7 +214,7 @@ void setup() {
   pinMode(BTN_RIGHT, INPUT_PULLUP);
   
   InitLCD();
-
+  
   DisplayGloLogo();
   //Some time for the logo to be displayed
   delay(2000);
@@ -431,13 +437,21 @@ void HandleCardsInput(){
       cardCurr = cardCurr%boardSize;
     }
     if(rightClick){
-      //Validate
+      //You picked your task!
        cardMode = false;
-       //UpdateBoards();
-       //GetBoardColumnId();
-       //UpdateCards();
-      Serial.println("You picked a card!");
+       taskName = cards[cardCurr].name;
     }
+}
+
+void HandleTaskInput(){
+   if(leftClick){
+      //Play/Pause button
+      taskPlaying = !taskPlaying;
+   }
+   if(rightClick){
+      //Done with the task!
+      taskDone = true;
+   }
 }
 
 void HandleInputs(){
@@ -451,6 +465,7 @@ void HandleInputs(){
   }
   else{
     //In Card mode, counting time & stuff
+    HandleTaskInput();
   }
 }
 
@@ -469,8 +484,29 @@ void UpdateDisplay(){
     return;
   }
   else{
-    //In Card mode, counting time & stuff
+    UpdateTaskDisplay();
   }
+}
+
+void UpdateTaskDisplay(){
+   display.clearDisplay();
+   display.setTextColor(BLACK);
+   display.print(taskName);
+   display.setCursor(2,20);
+   display.setTextSize(2);
+    if(taskDone){
+      display.write(219);
+    }
+    else if(!taskPlaying){
+      display.write(185);
+    }else{
+      display.write(16);
+    }
+   display.setTextSize(1);
+   display.setCursor(0,40);
+   display.print("01:30");
+   display.setCursor(30,40);
+   display.display();
 }
 
 void UpdateBoardsDisplay(){
@@ -503,5 +539,6 @@ void loop() {
   CheckButtons();
   HandleInputs();
   UpdateDisplay();
+  tick = !tick;
   delay(100);  // Adjust this to change graph speed
 }
