@@ -15,18 +15,18 @@ Add these to your Arduino IDE using Manage Libraries.
  
 ## Pins:
 
-| ESP8266 WeMos D1 Mini | Nokia 5110 LCD                                     |
-| ------------- | ---------------------- | ---------------------------------------------- |
+| ESP8266 WeMos D1 Mini | Nokia 5110 LCD
+| ------------- | ---------------------- | 
 | D2 (GPIO4)    | 0 RST         
 | D1 (GPIO5)    | 1 CE                   
 | D6 (GPIO12)   | 2 DC                   
-| D7 (GPIO13)   | 3 Din                 
-| D5 (GPIO14)   | 4 Clk                                  
-| 3V3           | 5 Vcc                                    
+| D7 (GPIO13)   | 3 DIN                 
+| D5 (GPIO14)   | 4 CLK                                  
+| 3V3           | 5 VCC                                    
 | D0 (GPIO16)   | 6 BL                            
-| G (GND)       | 7 Gnd   
+| G (GND)       | 7 GND   
  
-| ESP8266 WeMos D1 Mini | Buttons                                    |
-| ------------- | ---------------------- | ---------------------------------------------- |
+| ESP8266 WeMos D1 Mini | Buttons                    
+| ------------- | ---------------------- | 
 | D3 (GPI18)    | Left Button         
 | D4 (GPI17)    | Right Button                    
