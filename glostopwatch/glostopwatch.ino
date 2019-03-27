@@ -221,7 +221,7 @@ void setup() {
   
   DisplayGloLogo();
   //Some time for the logo to be displayed
-  delay(2000);
+  //delay(2000);
 
   ConnectToWiFi();
 
@@ -323,12 +323,22 @@ void DisplayBoards() {
 
 void DisplayCards() {
   //int arraySize = sizeof(boards) / sizeof(boards[0]);
+  display.clearDisplay();
+  //DISPLAYING THE BOARD TITLE
   String title = boards[boardCurr].name;
   title = title.substring(0,14);
   title.toUpperCase();
-  display.clearDisplay();
+  int l = title.length();
+  int pixels = 6 * l;
+  
+  //if the card title is smaller than the 84pixels composing the screen
+  if(pixels < 84){
+    int padding = int((84 - pixels)/2);
+    display.setCursor(padding,0);
+  }
   display.setTextColor(BLACK);
-  display.print(title);
+  display.print(title + "\n");
+  
   for (int i = 0; i < boardSize; i++) {  
     Card cd = cards[i];
     if(cd.selected == true){
@@ -459,8 +469,14 @@ void HandleTaskInput(){
       taskPlaying = !taskPlaying;
    }
    if(rightClick){
+      //stop the counter
+      taskPlaying = false;
       //Done with the task!
       taskDone = true;
+      PostTimeComment();
+      boardMode = false;
+      cardMode = false;
+      UpdateBoards();
    }
 }
 
@@ -575,6 +591,55 @@ void UpdateTime(){
     elapsedTime += now - lastTime;  
   }
   lastTime = now;
+}
+
+//Call when a task/card is done, to write your performances online
+void PostTimeComment(){
+  display.clearDisplay();
+  display.print("Card Done !");
+  display.display();
+  String board_id = boards[boardCurr].id;
+  String card_id = cards[cardCurr].id;
+  String url_comment = "/v1/glo/boards/";
+  url_comment += board_id;
+  url_comment += "/cards/";
+  url_comment += card_id;
+  url_comment += "/comments";
+  Serial.print(url_comment);
+
+  unsigned long Now = elapsedTime/1000;
+  int Seconds = Now%60;
+  int Minutes = (Now/60)%60;
+  int Hours = (Now/3600)%24;
+  
+  String message = "You finished your card in ";
+  if(Hours != 0){
+    message += String(Hours) + " hours, ";
+  }
+  if(Minutes != 0){
+    String m = intToDigit(Minutes);
+    message += m + " minutes and ";
+  }
+  String s = intToDigit(Seconds);
+  message += s + " seconds";
+  
+  
+  String PostData = "{";
+  PostData +="\"text\":\""+ message +"\"";
+  PostData += "}";
+  
+  Serial.print(PostData);
+  
+  client.print(String("POST ") + url_comment + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" +
+               "Authorization: " + bearer + "\r\n" +
+               "User-Agent: BuildFailureDetectorESP8266\r\n" +
+               "cache-control: no-cache\r\n" +
+               "Content-Type: application/json \r\n" +
+               "Content-Length: " + PostData.length() + "\r\n" +
+               "\r\n" + PostData + "\n");
+
+  Serial.println("request sent");
 }
 
 void loop() {
