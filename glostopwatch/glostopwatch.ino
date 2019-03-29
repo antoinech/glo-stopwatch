@@ -61,7 +61,7 @@ const char *bearer = "Bearer XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 const char* fingerprint = "6A A4 FE D7 4F 42 8F 0E 34 CD 23 DF 3C 73 E2 D1 F5 84 19 73";
 
 
-
+//Made with http://javl.github.io/image2cpp/
 //Glo logo, 84x48px
 const unsigned char GlogoBitmap [] PROGMEM = {  
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
