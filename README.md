@@ -1,5 +1,5 @@
 # Glo  Board Time Tracker
-Arduino code to make a Glo Board time manager device! You can find a demo [here](https://www.instructables.com).
+Arduino code to make a Glo Board time manager device! You can find a tutorial on how to make such device [here](https://www.instructables.com/id/Connected-Stopwatch/).
 This lets you use physical buttons to start,pause and end a task. The card will automatically get a comment with the time you needed to complete it.
 This code is developed for the ESP8266 board, but can be adapted to suit any Arduino compatible device. 
 
